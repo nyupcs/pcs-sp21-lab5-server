@@ -136,23 +136,28 @@ def before_request():
 
 @app.route('/verify', methods=('GET', 'POST'))
 def verify():
-    code = ''
+    code1 = ''
+    code2 = ''
 
     if request.method == 'POST':
-        if 'code' not in request.form or request.form['code'] == '':
+        if 'code1' not in request.form \
+                or request.form['code1'] == '' \
+                or 'code2' not in request.form \
+                or request.form['code2'] == '':
             flash("Can't load your code.", 'danger')
             return render_template('verify.html')
 
-        code = request.form['code']
+        code1 = request.form['code1']
+        code2 = request.form['code2']
 
         global users
         users = default_user_info()
 
-        status, message = pcs_verify(users, code)
+        status, message = pcs_verify(users, code1, code2)
 
         flash(message, 'success' if status else 'danger')
 
-    return render_template('verify.html', code=code)
+    return render_template('verify.html', code1=code1, code2=code2)
 
 
 @app.route('/reset')
