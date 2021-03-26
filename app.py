@@ -59,6 +59,10 @@ def profile(username):
         flash("The username does not exist!", 'danger')
         return redirect(url_for('index'))
 
+    if username != g.user and not users[username]['public']:
+        flash("{}'s profile is not public!".format(users[username]['name']), 'warning')
+        return redirect(url_for('index'))
+
     user = users[username]
 
     return render_template(
@@ -67,7 +71,8 @@ def profile(username):
         name=user['name'],
         avatar=user['avatar'],
         slogan=user['slogan'],
-        description=user['description']
+        description=user['description'],
+        visibility=user['public']
     )
 
 
@@ -98,6 +103,23 @@ def edit_profile(username):
         slogan=user['slogan'],
         description=user['description']
     )
+
+
+@app.route('/profile/<username>/visibility')
+def set_visibility(username):
+    if not g.user or g.user != username:
+        flash("You don't have permission to edit this profile!", 'danger')
+        return redirect(url_for('profile', username=username))
+
+    visibility = request.args.get('to', default='private')
+
+    users[username]['public'] = (visibility == 'public')
+
+    flash("Your profile visibility has been set to {}!".format(
+        'public' if visibility == 'public' else 'private'
+    ), 'success')
+
+    return redirect(url_for('profile', username=username))
 
 
 @app.before_request
@@ -151,7 +173,8 @@ def default_user_info():
             'name': 'Catrina',
             'avatar': '8918ce317a7726255b37fe972a423c3b',
             'slogan': 'Hi, my name is Catrina!',
-            'description': ''
+            'description': '',
+            'public': True
         },
         'hugh': {
             'username': 'hugh',
@@ -159,7 +182,8 @@ def default_user_info():
             'name': 'Hugh',
             'avatar': '491dbec39f772fb5ac326b6829faf542',
             'slogan': 'And my name is Hugh.',
-            'description': ''
+            'description': '',
+            'public': False
         },
         'sarah': {
             'username': 'sarah',
@@ -167,7 +191,8 @@ def default_user_info():
             'name': 'Sarah',
             'avatar': 'b0afb5dba0df5de740d72f14c22ea075',
             'slogan': 'I am Sarah!',
-            'description': ''
+            'description': '',
+            'public': True
         },
         'emma': {
             'username': 'emma',
@@ -175,7 +200,8 @@ def default_user_info():
             'name': 'Emma',
             'avatar': '421a669761c59f3278735113941a55c0',
             'slogan': 'I am Emma!',
-            'description': ''
+            'description': '',
+            'public': False
         },
         'joe': {
             'username': 'joe',
@@ -183,7 +209,8 @@ def default_user_info():
             'name': 'Joe',
             'avatar': '10fc31fcdefb8126b67fd3a5404ce65a',
             'slogan': 'And I am Joe to you.',
-            'description': ''
+            'description': '',
+            'public': False
         },
         'samy': {
             'username': 'samy',
@@ -191,7 +218,8 @@ def default_user_info():
             'name': 'Samy',
             'avatar': '3bc011b83a83224e97ee34fdd8fe35ea',
             'slogan': '',
-            'description': ''
+            'description': '',
+            'public': True
         }
     }
 
@@ -201,4 +229,4 @@ if __name__ == '__main__':
     app.config['SECRET_KEY'] = os.urandom(16)
     app.config['SESSION_COOKIE_NAME'] = 'pcs'
     app.config['SESSION_COOKIE_HTTPONLY'] = False
-    app.run(host="0.0.0.0", port=4000, debug=True)
+    app.run(host="0.0.0.0", port=4000)

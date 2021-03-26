@@ -7,8 +7,13 @@
 <div class="jumbotron col-12">
   <h1 class="display-4">{{ name }}'s Profile</h1>
   {% if g.user and g.user == username %}
-  <hr class="my-4">
-  <a class="btn btn-primary btn-lg" href="{{ url_for('edit_profile', username=username) }}" role="button">Edit</a>
+      <hr class="my-4">
+      <a class="btn btn-primary btn-lg" href="{{ url_for('edit_profile', username=username) }}" role="button">Edit</a>
+      {% if visibility %}
+          <a class="btn btn-warning btn-lg" href="{{ url_for('set_visibility', username=username, to='private') }}" role="button">Hide My Profile</a>
+      {% else %}
+          <a class="btn btn-warning btn-lg" href="{{ url_for('set_visibility', username=username, to='public') }}" role="button">Public My Profile</a>
+      {% endif %}
   {% endif %}
 </div>
 </div>
