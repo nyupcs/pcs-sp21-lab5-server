@@ -2,6 +2,7 @@ import random
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import string
+from time import sleep
 from werkzeug.security import generate_password_hash
 
 # Selenium
@@ -71,7 +72,12 @@ def pcs_verify(users, code1, code2):
     login(browser, users, 'joe')
 
     visit_html(browser, code1)
+
+    sleep(2)
+
     visit_html(browser, code2)
+
+    sleep(2)
 
     logout(browser)
 
